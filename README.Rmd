@@ -87,6 +87,30 @@ V(g)[which.max(V(g)$size)]
 
 karev is the most central by Eigenvector
 
+#### Community strucure via short random walks
+```{r random_walk_community, cache=TRUE}
+fc <- walktrap.community(g)
+memb <- membership(fc)
+plot(g, vertex.size=5, vertex.label=V(g)$name,vertex.color=memb+1, asp=FALSE)
+#number of communities and they size
+table(memb)
+#the modularity
+modularity(fc)
+```  
+
+
+#### Girvan-Newman community detection algorithm
+```{r Girvan_Newman_community, cache=TRUE}
+gnc <- edge.betweenness.community(g, directed=FALSE)
+memb2 <- membership(gnc)
+plot(g, vertex.size=5, vertex.label=V(g)$name,vertex.color=memb2+1, asp=FALSE)
+#number of communities and they size
+table(memb2)
+#the modularity
+modularity(gnc)
+```  
+
+
 ### Insights:
 1. two hot guys leads in the number of sexual relations with other characters  
 2. torres is bi-sexual

@@ -202,6 +202,58 @@ V(g)[which.max(V(g)$size)]
 
 karev is the most central by Eigenvector
 
+#### Community strucure via short random walks
+
+``` r
+fc <- walktrap.community(g)
+memb <- membership(fc)
+plot(g, vertex.size=5, vertex.label=V(g)$name,vertex.color=memb+1, asp=FALSE)
+```
+
+![](README_files/figure-markdown_github/random_walk_community-1.png)<!-- -->
+
+``` r
+#number of communities and they size
+table(memb)
+```
+
+    ## memb
+    ##  1  2  3  4  5  6  7 
+    ##  5 13  3  3  2  3  3
+
+``` r
+#the modularity
+modularity(fc)
+```
+
+    ## [1] 0.5147059
+
+#### Girvan-Newman community detection algorithm
+
+``` r
+gnc <- edge.betweenness.community(g, directed=FALSE)
+memb2 <- membership(gnc)
+plot(g, vertex.size=5, vertex.label=V(g)$name,vertex.color=memb2+1, asp=FALSE)
+```
+
+![](README_files/figure-markdown_github/Girvan_Newman_community-1.png)<!-- -->
+
+``` r
+#number of communities and they size
+table(memb2)
+```
+
+    ## memb2
+    ## 1 2 3 4 5 6 7 
+    ## 8 5 4 4 5 3 3
+
+``` r
+#the modularity
+modularity(gnc)
+```
+
+    ## [1] 0.5774221
+
 ### Insights:
 
 1.  two hot guys leads in the number of sexual relations with other characters

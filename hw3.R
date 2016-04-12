@@ -22,6 +22,7 @@ plot(g)
 clo <- closeness(g) 
 V(g)$color <- "gray"
 V(g)$size <- clo*5000
+V(g)$label <- V(g)$name
 plot(g)
 clo
 which.max(clo)
@@ -31,6 +32,7 @@ which.max(clo)
 btw <- betweenness(g) 
 V(g)$color <- "gray"
 V(g)$size <- btw/4
+V(g)$label <- V(g)$name
 plot(g)
 btw
 which.max(btw)
@@ -40,30 +42,27 @@ which.max(btw)
 eig <- centr_eigen(g)
 V(g)$color <- "gray"
 V(g)$size <- eig$vector*10
+V(g)$label <- V(g)$name
 plot(g)
 eig$vector
 V(g)[which.max(V(g)$size)]
 # karev is the most central by Eigenvector
 
+## Community strucure via short random walks
+fc <- walktrap.community(g)
+memb <- membership(fc)
+plot(g, vertex.size=5, vertex.label=V(g)$name,vertex.color=memb+1, asp=FALSE)
+describe(memb)
+#number of communities and their size
+table(memb)
+#the modularity
+modularity(fc)
+
+## Girvan-Newman community detection algorithm
 gnc <- edge.betweenness.community(g, directed=FALSE)
-V(g)$color <- gnc$membership
-V(g)$size <- 5 # Set same size to all nodes
-plot(g)
-
-g$layout <- layout.kamada.kawai(g)
-plot(g)
-
-
-no.clusters(g)
-## [1] 3
-cl <- clusters(g)
-which.max(cl$csize)
-## [1] 1
-cl$membership == which.max(cl$csize)
-to.keep <- which(cl$membership == which.max(cl$csize))
-g_gc <- induced.subgraph(g, to.keep)
-summary(g_gc)
-## IGRAPH UN-- 24 28 -- 
-## attr: name (v/c), gender (v/c), size (v/n), color (v/c)
-g_gc$layout <- layout.sphere(g_gc)
-plot(g_gc)
+memb2 <- membership(gnc)
+plot(g, vertex.size=5, vertex.label=V(g)$name,vertex.color=memb2+1, asp=FALSE)
+#number of communities and their size
+table(memb2)
+#the modularity
+modularity(gnc)
