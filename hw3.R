@@ -18,31 +18,38 @@ degr.score
 V(g)$size <- degree(g) * 3 # multiply by 2 for scale 
 plot(g) 
 
-V(g)$label <- NA # remove labels for now 
-plot(g)
-
 ## Closeness centrality.
 clo <- closeness(g) 
-# rescale values to match the elements of a color vector 
-clo.score <- round( (clo - min(clo)) * length(clo) / max(clo) ) + 1 
-# create color vector, use rev to make red "hot" 
-clo.colors <- rev(heat.colors(max(clo.score))) 
-V(g)$color <- clo.colors[ clo.score ] 
+V(g)$color <- "gray"
+V(g)$size <- clo*5000
 plot(g)
+clo
+which.max(clo)
+# torres is the most central by Closeness
 
 ## Betweeness centrality.
 btw <- betweenness(g) 
-btw.score <- round(btw) + 1 
-btw.colors <- rev(heat.colors(max(btw.score))) 
-V(g)$color <- btw.colors[ btw.score ] 
+V(g)$color <- "gray"
+V(g)$size <- btw/4
 plot(g)
+btw
+which.max(btw)
+# sloan is the most central by Betweeness
+
+## Eigenvector centrality.
+eig <- centr_eigen(g)
+V(g)$color <- "gray"
+V(g)$size <- eig$vector*10
+plot(g)
+eig$vector
+V(g)[which.max(V(g)$size)]
+# karev is the most central by Eigenvector
 
 gnc <- edge.betweenness.community(g, directed=FALSE)
 V(g)$color <- gnc$membership
 V(g)$size <- 5 # Set same size to all nodes
 plot(g)
 
-V(g)$label <- NA # remove labels for now 
 g$layout <- layout.kamada.kawai(g)
 plot(g)
 

@@ -16,19 +16,18 @@ g <- simplify(g)
 
 # Network Analysis:
 ### Reading the data
-The data is a csv files containing the graph edges of my twitter followers.
+The data is a csv files containing the graph edges of greys anatomy characters sexual relations.
 And edge is represented by couple: {From, To}
 ```{r read_data, cache=TRUE}
 head(ga.data)
 ```
 ### Data exploration:
-#### Followers:
-We've fetched information from CatcherGG[Guy Gonen] and his 134 followers.
-For each follower we fetched up to 200 possible followers and then dropped people which are not following CatcherGG In order to not exceed 200 nodes.
-```{r followers, cache=TRUE}
+#### Relations:
+let's look on all the characters we got.
+```{r relations, cache=TRUE}
 V(g)$name
 ```
-#### Number of Connections between followers and followers of followers:
+#### Number of Connections between characters:
 ```{r number_of_relations, cache=TRUE}
 summary(g)
 ```
@@ -38,44 +37,56 @@ summary(g)
 ```{r basic, cache=TRUE}
 g$layout <- layout.fruchterman.reingold(g)
 plot(g)
-```
-#### Basic representation without names [We'll continue without names from now on]:
-```{r basic_rep2, cache=TRUE}
-V(g)$label <- NA 
-g$layout <- layout.fruchterman.reingold(g)
-plot(g)
-```
+```  
 
 #### Degree score:
 ```{r degree, cache=TRUE}
 degr.score <- degree(g)
 degr.score
-
-V(g)$size <- degree(g) * 3 # multiply by 2 for scale 
+V(g)$size <- degree(g) * 3 
 plot(g)
 ```
 
 #### Closeness centrality:
 ```{r closeness_cent, cache=TRUE}
 clo <- closeness(g) 
-# rescale values to match the elements of a color vector 
-clo.score <- round( (clo - min(clo)) * length(clo) / max(clo) ) + 1 
-# create color vector, use rev to make red "hot" 
-clo.colors <- rev(heat.colors(max(clo.score))) 
-V(g)$color <- clo.colors[ clo.score ] 
+V(g)$color <- "gray"
+V(g)$size <- clo*5000
+V(g)$label <- V(g)$name
 plot(g)
-```
+clo
+which.max(clo)
+```  
+
+torres is the most central by Closeness
+
 
 #### Betweeness centrality.
 ```{r betweeness_cent, cache=TRUE}
 btw <- betweenness(g) 
-btw.score <- round(btw) + 1 
-btw.colors <- rev(heat.colors(max(btw.score))) 
-V(g)$color <- btw.colors[ btw.score ] 
+V(g)$color <- "gray"
+V(g)$size <- btw/4
+V(g)$label <- V(g)$name
 plot(g)
-```
+btw
+which.max(btw)
+```  
+
+sloan is the most central by Betweeness
+
+#### Eigenvector centrality.
+```{r eigenvector_cent, cache=TRUE}
+eig <- centr_eigen(g)
+V(g)$color <- "gray"
+V(g)$size <- eig$vector*15
+V(g)$label <- V(g)$name
+plot(g)
+eig$vector
+V(g)[which.max(V(g)$size)]
+```  
+
+karev is the most central by Eigenvector
 
 ### Insights:
-1. There are 7 disjoint cliques. When taking a closer look at the people in each cliques it was possible to easily tag them: University, Army, English twitter persons, ...
-2. It wasn't a suprise that CatcherGG would be in the middle since we know that everyone follows him.
-3. There is one clique which is made of people that almost has no followers, And they are connected with themselves and a few others. Some of them are bots and some of them are new people that are not active this days.
+1. two hot guys leads in the number of sexual relations with other characters  
+2. torres is bi-sexual

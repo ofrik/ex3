@@ -7,7 +7,7 @@ Network Analysis:
 
 ### Reading the data
 
-The data is a csv files containing the graph edges of my twitter followers. And edge is represented by couple: {From, To}
+The data is a csv files containing the graph edges of greys anatomy characters sexual relations. And edge is represented by couple: {From, To}
 
 ``` r
 head(ga.data)
@@ -23,9 +23,9 @@ head(ga.data)
 
 ### Data exploration:
 
-#### Followers:
+#### Relations:
 
-We've fetched information from CatcherGG\[Guy Gonen\] and his 134 followers. For each follower we fetched up to 200 possible followers and then dropped people which are not following CatcherGG In order to not exceed 200 nodes.
+let's look on all the characters we got.
 
 ``` r
 V(g)$name
@@ -40,7 +40,7 @@ V(g)$name
     ## [25] "thatch grey"  "tucker"       "hank"         "denny"       
     ## [29] "finn"         "steve"        "ben"          "avery"
 
-#### Number of Connections between followers and followers of followers:
+#### Number of Connections between characters:
 
 ``` r
 summary(g)
@@ -58,15 +58,7 @@ g$layout <- layout.fruchterman.reingold(g)
 plot(g)
 ```
 
-![](README_files/figure-markdown_github/basic-1.png)<!-- --> \#\#\#\# Basic representation without names \[We'll continue without names from now on\]:
-
-``` r
-V(g)$label <- NA 
-g$layout <- layout.fruchterman.reingold(g)
-plot(g)
-```
-
-![](README_files/figure-markdown_github/basic_rep2-1.png)<!-- -->
+![](README_files/figure-markdown_github/basic-1.png)<!-- -->
 
 #### Degree score:
 
@@ -91,7 +83,7 @@ degr.score
     ##            1            1
 
 ``` r
-V(g)$size <- degree(g) * 3 # multiply by 2 for scale 
+V(g)$size <- degree(g) * 3 
 plot(g)
 ```
 
@@ -101,30 +93,116 @@ plot(g)
 
 ``` r
 clo <- closeness(g) 
-# rescale values to match the elements of a color vector 
-clo.score <- round( (clo - min(clo)) * length(clo) / max(clo) ) + 1 
-# create color vector, use rev to make red "hot" 
-clo.colors <- rev(heat.colors(max(clo.score))) 
-V(g)$color <- clo.colors[ clo.score ] 
+V(g)$color <- "gray"
+V(g)$size <- clo*5000
+V(g)$label <- V(g)$name
 plot(g)
 ```
 
 ![](README_files/figure-markdown_github/closeness_cent-1.png)<!-- -->
 
+``` r
+clo
+```
+
+    ##         lexi         owen        sloan       torres        derek 
+    ##  0.003115265  0.002898551  0.003174603  0.003194888  0.003039514 
+    ##        karev     o'malley         yang         grey        chief 
+    ##  0.003174603  0.003134796  0.002754821  0.003003003  0.001148106 
+    ##   ellis grey   susan grey       bailey        izzie       altman 
+    ##  0.001149425  0.001144165  0.001075269  0.003076923  0.003039514 
+    ##      arizona        colin      preston       kepner      addison 
+    ##  0.002985075  0.002597403  0.002597403  0.002967359  0.003174603 
+    ##        nancy       olivia mrs. seabury        adele  thatch grey 
+    ##  0.002967359  0.003039514  0.002967359  0.001144165  0.001148106 
+    ##       tucker         hank        denny         finn        steve 
+    ##  0.001074114  0.002881844  0.002881844  0.002816901  0.002816901 
+    ##          ben        avery 
+    ##  0.001074114  0.002915452
+
+``` r
+which.max(clo)
+```
+
+    ## torres 
+    ##      4
+
+torres is the most central by Closeness
+
 #### Betweeness centrality.
 
 ``` r
 btw <- betweenness(g) 
-btw.score <- round(btw) + 1 
-btw.colors <- rev(heat.colors(max(btw.score))) 
-V(g)$color <- btw.colors[ btw.score ] 
+V(g)$color <- "gray"
+V(g)$size <- btw/4
+V(g)$label <- V(g)$name
 plot(g)
 ```
 
 ![](README_files/figure-markdown_github/betweeness_cent-1.png)<!-- -->
 
+``` r
+btw
+```
+
+    ##         lexi         owen        sloan       torres        derek 
+    ##     36.00000     60.00000    115.36667     67.15000     17.95000 
+    ##        karev     o'malley         yang         grey        chief 
+    ##     95.26667     54.41667     43.00000     46.86667      3.00000 
+    ##   ellis grey   susan grey       bailey        izzie       altman 
+    ##      4.00000      0.00000      1.00000     47.95000     76.00000 
+    ##      arizona        colin      preston       kepner      addison 
+    ##      0.00000      0.00000      0.00000      0.00000     44.08333 
+    ##        nancy       olivia mrs. seabury        adele  thatch grey 
+    ##      0.00000      4.95000      0.00000      0.00000      3.00000 
+    ##       tucker         hank        denny         finn        steve 
+    ##      0.00000      0.00000      0.00000      0.00000      0.00000 
+    ##          ben        avery 
+    ##      0.00000      0.00000
+
+``` r
+which.max(btw)
+```
+
+    ## sloan 
+    ##     3
+
+sloan is the most central by Betweeness
+
+#### Eigenvector centrality.
+
+``` r
+eig <- centr_eigen(g)
+V(g)$color <- "gray"
+V(g)$size <- eig$vector*15
+V(g)$label <- V(g)$name
+plot(g)
+```
+
+![](README_files/figure-markdown_github/eigenvector_cent-1.png)<!-- -->
+
+``` r
+eig$vector
+```
+
+    ##  [1] 5.255806e-01 6.780381e-02 6.418121e-01 7.178773e-01 2.500302e-01
+    ##  [6] 1.000000e+00 6.006975e-01 2.394956e-02 3.004927e-01 3.543338e-17
+    ## [11] 8.040237e-17 1.828613e-17 1.752547e-17 5.653959e-01 2.077024e-01
+    ## [16] 2.101205e-01 7.009961e-03 7.009961e-03 2.926969e-01 5.537364e-01
+    ## [21] 1.878564e-01 4.685192e-01 2.926969e-01 2.705687e-17 5.755060e-17
+    ## [26] 1.831625e-17 1.654896e-01 1.654896e-01 8.795329e-02 8.795329e-02
+    ## [31] 3.027240e-17 1.538358e-01
+
+``` r
+V(g)[which.max(V(g)$size)]
+```
+
+    ## + 1/32 vertex, named:
+    ## [1] karev
+
+karev is the most central by Eigenvector
+
 ### Insights:
 
-1.  There are 7 disjoint cliques. When taking a closer look at the people in each cliques it was possible to easily tag them: University, Army, English twitter persons, ...
-2.  It wasn't a suprise that CatcherGG would be in the middle since we know that everyone follows him.
-3.  There is one clique which is made of people that almost has no followers, And they are connected with themselves and a few others. Some of them are bots and some of them are new people that are not active this days.
+1.  two hot guys leads in the number of sexual relations with other characters
+2.  torres is bi-sexual
